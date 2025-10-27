@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <title>WPOL Arbitrage Scanner + Executor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #071021;
+      --card: #0b1a2f;
+      --text: #e6eef8;
+      --muted: #84a2bd;
+      --border: #203240;
+      --green: #8de57d;
+      --red: #ff8a8a;
+    }
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      margin: 0;
+    }
+    h1 { margin: 0 0 8px; }
+    .subtitle { color: var(--muted); margin-bottom: 16px; font-size: 13px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 8px 0 4px; }
+    input, select, button {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--text);
+      width: 100%;
+      font-size: 14px;
+    }
+    .row { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 140px; }
+    .small { flex: 0 0 120px; }
+    button {
+      background: #1a2d47;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: #253d5a; }
+
+    /* Tombol khusus */
+    .exec-btn, .connect-btn {
+      font-size: 12px;
+      padding: 4px 6px;
+      background: #1a2d47;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .exec-btn:hover, .connect-btn:hover {
+      background: #253d5a;
+    }
+
+    .controls { 
+      margin: 12px 0; 
+      display: flex; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      align-items: center; 
+    }
+    .status { color: var(--muted); font-size: 13px; }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 16px;
+      background: var(--card); border-radius: 8px; overflow: hidden;
+    }
+    th, td { padding: 10px 12px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border); }
+    th { color: #7fa0bf; font-weight: 600; }
+    .profit-pos { color: var(--green); font-weight: bold; }
+    .profit-neg { color: var(--red); font-weight: bold; }
+    .route-path { font-family: monospace; font-size: 12px; }
+    .muted { color: var(--muted); }
+    #wallet-info {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <h1>WPOL Arbitrage Route Scanner</h1>
+  <p class="subtitle">WPOL = Wrapped MATIC. Deteksi & eksekusi arbitrase di QuickSwap V2.</p>
+
+  <button id="connectWallet" class="connect-btn">🔌 Connect Wallet</button>
+  <div id="wallet-info">Belum terhubung</div>
+
+  <label for="rpc">RPC Endpoint</label>
+  <input id="rpc" value="https://polygon-rpc.com" />
+
+  <div class="row">
+    <div class="col">
+      <label for="amount">Jumlah WPOL untuk uji</label>
+      <input id="amount" value="1" />
+    </div>
+    <div class="col small">
+      <label for="delay">Delay (ms)</label>
+      <input id="delay" value="200" type="number" min="0" />
+    </div>
+    <div class="col small">
+      <label>Tampilkan hanya profitable?</label>
+      <select id="filterProfitable">
+        <option value="false">Tidak</option>
+        <option value="true">Ya</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="start">🔎 Mulai Scan</button>
+    <button id="clear">Clear</button>
+    <span class="status" id="status">Status: idle</span>
+  </div>
+
+  <!-- Rute terbaik -->
+  <div id="best-route"></div>
+
+  <!-- Tabel hasil -->
+  <table id="tbl" style="display: none;">
+    <thead>
+      <tr>
+        <th>#</th><th>Route</th><th>Output</th><th>Profit</th><th>%</th><th>Note</th>
+      </tr>
+    </thead>
+    <tbody id="tb"></tbody>
+  </table>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="tokens.js"></script>
+  <script src="scanner.js"></script>
+</body>
+</html>
