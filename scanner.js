@@ -211,3 +211,29 @@
     setStatus('Dibersihkan');
   });
 })();
+// --- Tambahkan di bagian paling bawah scanner.js ---
+const connectBtn = document.getElementById('connectWallet');
+const walletInfo = document.getElementById('wallet-info');
+
+connectBtn.addEventListener('click', async () => {
+  if (!window.ethereum) {
+    alert('MetaMask tidak ditemukan. Silakan instal MetaMask terlebih dahulu.');
+    return;
+  }
+
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    const network = await provider.getNetwork();
+
+    walletInfo.innerHTML = `
+      ✅ Terhubung: <b>${address}</b><br>
+      Jaringan: ${network.name} (Chain ID: ${network.chainId})
+    `;
+  } catch (err) {
+    console.error(err);
+    walletInfo.textContent = '❌ Gagal terhubung ke wallet.';
+  }
+});
